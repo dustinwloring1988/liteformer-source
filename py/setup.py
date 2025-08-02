@@ -3,7 +3,7 @@ from pathlib import Path
 from setuptools import find_packages, setup
 
 # Remove stale egg-info
-egg_info = Path(__file__).parent / "light_transformers.egg-info"
+egg_info = Path(__file__).parent / "liteformer.egg-info"
 if egg_info.exists():
     print(f"Removing stale egg-info: {egg_info}")
     shutil.rmtree(egg_info)
@@ -42,7 +42,7 @@ extras = {
 }
 
 setup(
-    name="light-transformers",
+    name="LiteFormer",
     version="0.1.0",
     author="Dustin Loring",
     author_email="dloring1988@gmail.com",
@@ -50,7 +50,7 @@ setup(
     long_description=open("README.md", encoding="utf-8").read(),
     long_description_content_type="text/markdown",
     license="Apache 2.0",
-    url="https://github.com/dustinwloring1988/light-transformers",
+    url="https://github.com/dustinwloring1988/liteformer",
     package_dir={"": "src"},
     packages=find_packages("src"),
     include_package_data=True,
