@@ -131,7 +131,6 @@ python lite_transformers_builder.py
 ## 📋 TODO
 
 * [ ] Make repo compile by removing or fixing invalid imports and paths
-* [ ] Move replacement files to a subfolder called patches, this can also have subfodlers matching the structure of the transfomers repo
 * [ ] Replace the current __version__ in `src/transformers/__init__.py` with __version__ = "0.1.0"
 * [ ] Reduce auto classes to only what is minimally necessary
 * [ ] Replace placeholder models with real SOTA architectures (more info coming)
