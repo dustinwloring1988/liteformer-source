@@ -100,12 +100,12 @@ To add a new model (e.g. `xformer`):
    * `image_processing_xformer_fast.py` (optional for vision)
    * `feature_extraction_xformer.py` (required for audio)
 
-2. Add `"xformer"` to the `NEW_MODELS` list in `light_transformers_builder.py`
+2. Add `"xformer"` to the `NEW_MODELS` list in `lite_transformers_builder.py`
 
 3. Run the script again:
 
 ```bash
-python light_transformers_builder.py
+python lite_transformers_builder.py
 ```
 
 ---
