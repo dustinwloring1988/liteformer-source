@@ -21,7 +21,11 @@ log = logging.getLogger(__name__)
 
 # --- Utilities ---
 def run_subprocess(command: List[str]):
-    subprocess.run(command, check=True)
+    try:
+        subprocess.run(command, check=True)
+    except subprocess.CalledProcessError as e:
+        log.error(f"💥 Subprocess failed: {' '.join(command)}\n{e}")
+        raise SystemExit(1)
 
 
 def safe_rmtree(path: Path):
@@ -148,25 +152,6 @@ def cleanup_examples():
 
 
 # --- Additions ---
-def add_custom_model_files():
-    model_dir = Path("src/transformers/models/aformer")
-    model_dir.mkdir(parents=True, exist_ok=True)
-
-    files = {
-        "modular_aformer.py": model_dir / "modeling_aformer.py",
-        "tokenization_aformer.py": model_dir / "tokenization_aformer.py",
-        "tokenization_aformer_fast.py": model_dir / "tokenization_aformer_fast.py"
-    }
-
-    for src, dst in files.items():
-        src_path = SCRIPT_DIR / src
-        if src_path.exists():
-            shutil.copyfile(src_path, dst)
-            log.info(f"📄 Copied {src_path.name} → {dst}")
-        else:
-            log.warning(f"⚠️ Skipped missing file: {src_path.name}")
-
-
 def add_placeholder_models():
     for model in NEW_MODELS:
         model_dir = Path("src/transformers/models") / model
@@ -212,10 +197,20 @@ def create_test_folders():
 
 def update_main_init():
     init_path = Path("src/transformers/models/__init__.py")
+    if not init_path.exists():
+        log.warning(f"⚠️ models/__init__.py not found at: {init_path}")
+        return
+
+    current_content = init_path.read_text()
+
     with init_path.open("a", encoding="utf-8") as f:
         for model in NEW_MODELS:
-            f.write(f"from . import {model}\n")
-            log.info("📥 Updated __init__.py with model imports")
+            import_line = f"from . import {model}\n"
+            if import_line not in current_content:
+                f.write(import_line)
+                log.info(f"📥 Added import for: {model}")
+            else:
+                log.debug(f"✅ Import for {model} already exists")
 
 def reorganize_docs_structure():
     """
@@ -304,7 +299,6 @@ def replace_root_files():
             log.info(f"📄 Replaced root file: {file_name}")
         else:
             log.warning(f"⚠️  Missing file in 'patches': {file_name}")
-
 def main():
     clone_repo()
     cleanup_unwanted_models()
@@ -317,14 +311,16 @@ def main():
     cleanup_model_docs()
     cleanup_additional_files()
     cleanup_examples()
-    add_custom_model_files()
     add_placeholder_models()
     create_test_folders()
     update_main_init()
     reorganize_docs_structure() 
     replace_auto_files() 
     replace_root_files()
-    log.info(f"\n✅ Light Transformers package is ready at: {TARGET_DIR}")
+
+    log.info(f"\n✅ LiteFormer package is ready at: {TARGET_DIR}")
+    log.info(f"📦 Models included: {', '.join(NEW_MODELS)}")
+    log.info("🧪 You can now develop and test your custom transformer architectures!")
 
 if __name__ == "__main__":
     main()
