@@ -251,13 +251,13 @@ def reorganize_docs_structure():
 
 def replace_auto_files():
     """
-    Replaces contents of src/transformers/models/auto/ with files from local 'auto' directory.
+    Replaces contents of src/transformers/models/auto/ with files from patches/src/transformers/models/auto/.
     """
-    src_auto_dir = SCRIPT_DIR / "auto"
+    src_auto_dir = SCRIPT_DIR / "patches/src/transformers/models/auto"
     dest_auto_dir = Path("src/transformers/models/auto")
 
     if not src_auto_dir.exists():
-        log.warning("⚠️  Local 'auto' directory not found.")
+        log.warning("⚠️  Source 'auto' directory not found in patches.")
         return
 
     # Clear destination auto directory
@@ -268,7 +268,7 @@ def replace_auto_files():
             shutil.rmtree(item)
         log.info(f"🗑️  Removed existing item in auto/: {item.name}")
 
-    # Copy all files from local 'auto' directory to destination
+    # Copy all files from the new auto source
     for item in src_auto_dir.iterdir():
         dest = dest_auto_dir / item.name
         if item.is_file():
@@ -277,16 +277,17 @@ def replace_auto_files():
             shutil.copytree(item, dest)
         log.info(f"📄 Copied {item.name} → {dest_auto_dir}")
 
+
 def replace_root_files():
     """
     Replaces Makefile, pyproject.toml, and setup.py in the root of the cloned repo
-    with the versions from the local 'py' folder.
+    with the versions from the 'patches' directory.
     """
-    py_dir = SCRIPT_DIR / "py"
-    dest_dir = SCRIPT_DIR / TARGET_DIR  # <--- Ensures absolute path
+    patches_dir = SCRIPT_DIR / "patches"
+    dest_dir = SCRIPT_DIR / TARGET_DIR
 
-    if not py_dir.exists():
-        log.warning("⚠️  Local 'py' directory not found.")
+    if not patches_dir.exists():
+        log.warning("⚠️  'patches' directory not found.")
         return
 
     if not dest_dir.exists():
@@ -295,16 +296,14 @@ def replace_root_files():
 
     root_files = ["Makefile", "pyproject.toml", "setup.py"]
     for file_name in root_files:
-        src_file = py_dir / file_name
+        src_file = patches_dir / file_name
         dest_file = dest_dir / file_name
 
         if src_file.exists():
             shutil.copyfile(src_file, dest_file)
             log.info(f"📄 Replaced root file: {file_name}")
         else:
-            log.warning(f"⚠️  Missing file in 'py' folder: {file_name}")
-
-
+            log.warning(f"⚠️  Missing file in 'patches': {file_name}")
 
 def main():
     clone_repo()
