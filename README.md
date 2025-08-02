@@ -46,7 +46,7 @@ These models are retained and initialized for experimentation:
 - aformer : Alpha Transformer : Text In Text Out (think nanogpt)
 - bformer : Basic Transformer : Text In Text Out (think gemma2)
 - cformer : Clip Transformer : Image In Text Out (think clip)
-- dformer : Drawing Transformer : Text In Image Out (think clip)
+- dformer : Drawing Transformer : Text In Image Out (think aMUSEd)
 - eformer : MOE Transformer : Any In Text Out (think llama4)
 - mformer : Mat Transformer : Text In Text Out (think basic version of gemma3n)
 - nformer : OmniMat Transformer : Any In Text Out (think gemma3n)
