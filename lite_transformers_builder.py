@@ -11,7 +11,7 @@ TARGET_DIR = "lite_transformers"
 
 NEW_MODELS = [
     "aformer", "bformer", "eformer", "vformer", "oformer",
-    "mformer", "nformer", "cformer", "sformer"
+    "mformer", "nformer", "cformer", "sformer", "tformer"
 ]
 
 PRESERVE_MODELS = [
