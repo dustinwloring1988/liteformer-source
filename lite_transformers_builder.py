@@ -8,10 +8,27 @@ from typing import List
 # --- Configuration ---
 REPO_URL = "https://github.com/huggingface/transformers.git"
 TARGET_DIR = "lite_transformers"
+
 NEW_MODELS = [
     "aformer", "eformer", "vformer", "oformer",
     "mformer", "nformer", "cformer", "sformer"
 ]
+
+PRESERVE_MODELS = [
+    "bark", "clip", "clip_text_model", "clip_vision_model", "clipseg", "gemma", "gemma2", "gemma3", 
+    "gemma3_text", "gemma3n", "gemma3n_audio", "gemma3n_text", "gemma3n_vision", "llama", "llama4", 
+    "llama4_text", "llava", "llava_next", "llava_next_video", "llava_onevision", "mistral", "mistral3", 
+    "mixtral", "mllama", "mobilenet_v1", "mobilenet_v2", "mobilevit", "mobilevitv2", "openai-gpt", 
+    "paligemma", "phi", "phi3", "phi4_multimodal", "phimoe", "pix2struct", "pixtral", "qwen2", 
+    "qwen2_5_omni", "qwen2_5_vl", "qwen2_5_vl_text", "qwen2_audio", "qwen2_audio_encoder", 
+    "qwen2_moe", "qwen2_vl", "qwen2_vl_text", "qwen3", "qwen3_moe", "sam", "sam_hq", 
+    "sam_hq_vision_model", "sam_vision_model", "shieldgemma2", "siglip", "siglip2", 
+    "siglip_vision_model", "smollm3", "smolvlm", "smolvlm_vision", "timm_backbone", 
+    "timm_wrapper", "video_llava", "vit", "vit_hybrid", "vit_mae", "vit_msn", "vitdet", 
+    "vitmatte", "vitpose", "vitpose_backbone", "vits", "vivit", "whisper", "yolos"
+]
+
+KEEP_MODELS = set(NEW_MODELS + PRESERVE_MODELS + ["auto"])
 SCRIPT_DIR = Path(__file__).resolve().parent
 
 # --- Logging Setup ---
@@ -51,10 +68,8 @@ def clone_repo():
 def cleanup_unwanted_models():
     os.chdir(TARGET_DIR)
     models_dir = Path("src/transformers/models")
-    keep = set(NEW_MODELS + ["auto"])
-
     for subdir in models_dir.iterdir():
-        if subdir.is_dir() and subdir.name not in keep:
+        if subdir.is_dir() and subdir.name not in KEEP_MODELS:
             safe_rmtree(subdir)
 
     for backend in ["flax", "tensorflow"]:
@@ -75,11 +90,11 @@ def cleanup_test_models():
         return
 
     for subdir in test_models_dir.iterdir():
-        if subdir.is_dir() and subdir.name not in NEW_MODELS:
+        if subdir.is_dir() and subdir.name not in KEEP_MODELS:
             safe_rmtree(subdir)
 
     for file in test_models_dir.rglob("*.py"):
-        if not any(model in str(file) for model in NEW_MODELS):
+        if not any(model in str(file) for model in KEEP_MODELS):
             safe_remove_file(file)
 
 
@@ -124,7 +139,8 @@ def cleanup_model_docs():
         return
 
     for file in doc_dir.glob("*.md"):
-        safe_remove_file(file)
+        if file.stem not in KEEP_MODELS:
+            safe_remove_file(file)
 
     for model in NEW_MODELS:
         doc_file = doc_dir / f"{model}.md"
@@ -187,13 +203,14 @@ def create_test_folders():
 
         ```bash
         python -m pytest tests/models/{model}/
-        ````
+        ```
 
         ## Notes
 
         Add specific testing notes for {model.capitalize()} here.
         """)
         log.info(f"🧪 Created test folder for: {model}")
+
 
 def update_main_init():
     init_path = Path("src/transformers/models/__init__.py")
@@ -202,31 +219,22 @@ def update_main_init():
         return
 
     current_content = init_path.read_text()
-
     with init_path.open("a", encoding="utf-8") as f:
         for model in NEW_MODELS:
             import_line = f"from . import {model}\n"
             if import_line not in current_content:
                 f.write(import_line)
                 log.info(f"📥 Added import for: {model}")
-            else:
-                log.debug(f"✅ Import for {model} already exists")
+
 
 def reorganize_docs_structure():
-    """
-    Deletes onnx.md from docs/source/en/main_classes,
-    moves all content from docs/source/en to docs,
-    and deletes docs/source entirely.
-    """
     docs_dir = Path("docs")
     source_en = docs_dir / "source/en"
     target_dir = docs_dir
 
-    # Remove the specific file
     onnx_file = source_en / "main_classes/onnx.md"
     safe_remove_file(onnx_file)
 
-    # Move files and folders from docs/source/en to docs/
     if source_en.exists():
         for item in source_en.iterdir():
             dest = target_dir / item.name
@@ -239,15 +247,12 @@ def reorganize_docs_structure():
                 shutil.move(str(item), str(dest))
                 log.info(f"📄 Moved file: {item} → {dest}")
 
-    # Delete docs/source folder
     source_dir = docs_dir / "source"
     safe_rmtree(source_dir)
     log.info(f"🧹 Removed docs/source directory")
 
+
 def replace_auto_files():
-    """
-    Replaces contents of src/transformers/models/auto/ with files from patches/src/transformers/models/auto/.
-    """
     src_auto_dir = SCRIPT_DIR / "patches/src/transformers/models/auto"
     dest_auto_dir = Path("src/transformers/models/auto")
 
@@ -255,7 +260,6 @@ def replace_auto_files():
         log.warning("⚠️  Source 'auto' directory not found in patches.")
         return
 
-    # Clear destination auto directory
     for item in dest_auto_dir.glob("*"):
         if item.is_file():
             item.unlink()
@@ -263,7 +267,6 @@ def replace_auto_files():
             shutil.rmtree(item)
         log.info(f"🗑️  Removed existing item in auto/: {item.name}")
 
-    # Copy all files from the new auto source
     for item in src_auto_dir.iterdir():
         dest = dest_auto_dir / item.name
         if item.is_file():
@@ -274,10 +277,6 @@ def replace_auto_files():
 
 
 def replace_root_files():
-    """
-    Replaces Makefile, pyproject.toml, and setup.py in the root of the cloned repo
-    with the versions from the 'patches' directory.
-    """
     patches_dir = SCRIPT_DIR / "patches"
     dest_dir = SCRIPT_DIR / TARGET_DIR
 
@@ -299,6 +298,9 @@ def replace_root_files():
             log.info(f"📄 Replaced root file: {file_name}")
         else:
             log.warning(f"⚠️  Missing file in 'patches': {file_name}")
+
+
+# --- Main ---
 def main():
     clone_repo()
     cleanup_unwanted_models()
@@ -314,13 +316,14 @@ def main():
     add_placeholder_models()
     create_test_folders()
     update_main_init()
-    reorganize_docs_structure() 
-    replace_auto_files() 
+    reorganize_docs_structure()
+    replace_auto_files()
     replace_root_files()
 
     log.info(f"\n✅ LiteFormer package is ready at: {TARGET_DIR}")
-    log.info(f"📦 Models included: {', '.join(NEW_MODELS)}")
+    log.info(f"📦 Models included: {', '.join(sorted(KEEP_MODELS))}")
     log.info("🧪 You can now develop and test your custom transformer architectures!")
+
 
 if __name__ == "__main__":
     main()
