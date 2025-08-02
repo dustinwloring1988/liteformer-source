@@ -1,6 +1,10 @@
 # LiteFormer
 
-**LiteFormer** is a lightweight, research-focused fork of [Hugging Face Transformers](https://github.com/huggingface/transformers). This project is designed to make it faster and easier to iterate on new transformer architectures by stripping out unnecessary components and leaving a minimal, modular, PyTorch-only core.
+[![License](https://img.shields.io/github/license/dustinwloring1988/liteformer)](https://opensource.org/licenses/Apache-2.0)
+[![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Stars](https://img.shields.io/github/stars/dustinwloring1988/liteformer?style=social)](https://github.com/dustinwloring1988/liteformer)
+
+**LiteFormer** is a lightweight, research-focused fork of [Hugging Face Transformers](https://github.com/huggingface/transformers).
 
 > ⚠️ **Not intended for production use.** This repository serves as a rapid prototyping and experimentation playground for transformer research.
 
