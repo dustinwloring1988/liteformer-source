@@ -1,0 +1,331 @@
+import os
+import shutil
+import subprocess
+import logging
+from pathlib import Path
+from typing import List
+
+# --- Configuration ---
+REPO_URL = "https://github.com/huggingface/transformers.git"
+TARGET_DIR = "lite_transformers"
+NEW_MODELS = [
+    "aformer", "eformer", "vformer", "oformer",
+    "mformer", "nformer", "cformer", "sformer"
+]
+SCRIPT_DIR = Path(__file__).resolve().parent
+
+# --- Logging Setup ---
+logging.basicConfig(level=logging.INFO, format="🛠️  %(message)s")
+log = logging.getLogger(__name__)
+
+
+# --- Utilities ---
+def run_subprocess(command: List[str]):
+    subprocess.run(command, check=True)
+
+
+def safe_rmtree(path: Path):
+    if path.exists() and path.is_dir():
+        shutil.rmtree(path)
+        log.info(f"📁 Removed folder: {path}")
+
+
+def safe_remove_file(path: Path):
+    if path.exists() and path.is_file():
+        path.unlink()
+        log.info(f"🗑️ Removed file: {path}")
+
+
+# --- Repo Setup ---
+def clone_repo():
+    if Path(TARGET_DIR).exists():
+        safe_rmtree(Path(TARGET_DIR))
+    run_subprocess(["git", "clone", REPO_URL, TARGET_DIR])
+
+
+# --- Cleanup Tasks ---
+def cleanup_unwanted_models():
+    os.chdir(TARGET_DIR)
+    models_dir = Path("src/transformers/models")
+    keep = set(NEW_MODELS + ["auto"])
+
+    for subdir in models_dir.iterdir():
+        if subdir.is_dir() and subdir.name not in keep:
+            safe_rmtree(subdir)
+
+    for backend in ["flax", "tensorflow"]:
+        for model in NEW_MODELS:
+            safe_rmtree(models_dir / model / backend)
+
+
+def cleanup_docs():
+    docs_dir = Path("docs/source")
+    for lang_dir in docs_dir.glob("*/"):
+        if lang_dir.name != "en":
+            safe_rmtree(lang_dir)
+
+
+def cleanup_test_models():
+    test_models_dir = Path("tests/models")
+    if not test_models_dir.exists():
+        return
+
+    for subdir in test_models_dir.iterdir():
+        if subdir.is_dir() and subdir.name not in NEW_MODELS:
+            safe_rmtree(subdir)
+
+    for file in test_models_dir.rglob("*.py"):
+        if not any(model in str(file) for model in NEW_MODELS):
+            safe_remove_file(file)
+
+
+def cleanup_auto_models():
+    auto_dir = Path("src/transformers/models/auto")
+    for file_name in ["modeling_flax_auto.py", "modeling_tf_auto.py"]:
+        safe_remove_file(auto_dir / file_name)
+
+
+def cleanup_transformers_folders():
+    base = Path("src/transformers")
+    for folder in ["onnx", "sagemaker"]:
+        safe_rmtree(base / folder)
+
+
+def cleanup_generation_files():
+    gen_dir = Path("src/transformers/generation")
+    for fname in [
+        "flax_logits_process.py", "flax_utils.py",
+        "tf_logits_process.py", "tf_utils.py"
+    ]:
+        safe_remove_file(gen_dir / fname)
+
+
+def cleanup_transformers_files():
+    base = Path("src/transformers")
+    files = [
+        "convert_graph_to_onnx.py", "convert_pytorch_checkpoint_to_tf2.py",
+        "convert_tf_hub_seq_to_seq_bert_to_pytorch.py", "modeling_flax_outputs.py",
+        "modeling_flax_pytorch_utils.py", "modeling_flax_utils.py",
+        "modeling_tf_outputs.py", "modeling_tf_pytorch_utils.py",
+        "modeling_tf_utils.py", "optimization_tf.py", "tf_utils.py"
+    ]
+    for f in files:
+        safe_remove_file(base / f)
+
+
+def cleanup_model_docs():
+    doc_dir = Path("docs/source/en/model_doc")
+    if not doc_dir.exists():
+        log.warning(f"⚠️ Model doc directory not found: {doc_dir}")
+        return
+
+    for file in doc_dir.glob("*.md"):
+        safe_remove_file(file)
+
+    for model in NEW_MODELS:
+        doc_file = doc_dir / f"{model}.md"
+        doc_file.write_text(f"# {model.capitalize()} placeholder documentation\n")
+        log.info(f"📄 Created doc for: {model}")
+
+
+def cleanup_additional_files():
+    safe_rmtree(Path("i18n"))
+    safe_remove_file(Path("utils/check_tf_ops.py"))
+    safe_rmtree(Path("docker/transformers-tensorflow-gpu"))
+
+    docker_dir = Path("docker")
+    for name in [
+        "examples-tf", "pipeline-tf", "tf-light",
+        "torch-tf-light", "torch-jax-light", "jax-light"
+    ]:
+        safe_remove_file(docker_dir / name)
+
+
+def cleanup_examples():
+    examples_dir = Path("examples")
+    for folder in ["flax", "legacy", "tensorflow"]:
+        safe_rmtree(examples_dir / folder)
+
+
+# --- Additions ---
+def add_custom_model_files():
+    model_dir = Path("src/transformers/models/aformer")
+    model_dir.mkdir(parents=True, exist_ok=True)
+
+    files = {
+        "modular_aformer.py": model_dir / "modeling_aformer.py",
+        "tokenization_aformer.py": model_dir / "tokenization_aformer.py",
+        "tokenization_aformer_fast.py": model_dir / "tokenization_aformer_fast.py"
+    }
+
+    for src, dst in files.items():
+        src_path = SCRIPT_DIR / src
+        if src_path.exists():
+            shutil.copyfile(src_path, dst)
+            log.info(f"📄 Copied {src_path.name} → {dst}")
+        else:
+            log.warning(f"⚠️ Skipped missing file: {src_path.name}")
+
+
+def add_placeholder_models():
+    for model in NEW_MODELS:
+        model_dir = Path("src/transformers/models") / model
+        model_dir.mkdir(parents=True, exist_ok=True)
+        (model_dir / "README.md").write_text(f"# {model} placeholder\n")
+        (model_dir / "model_card.md").write_text(f"# Model Card for {model}\n")
+
+        test_dir = model_dir / "tests"
+        test_dir.mkdir(exist_ok=True)
+        (test_dir / "README.md").write_text(f"# Tests for {model} (placeholder)\n")
+        log.info(f"📦 Placeholder created for model: {model}")
+
+
+def create_test_folders():
+    base_dir = Path("tests/models")
+    base_dir.mkdir(parents=True, exist_ok=True)
+
+    for model in NEW_MODELS:
+        folder = base_dir / model
+        folder.mkdir(parents=True, exist_ok=True)
+        readme = folder / "README.md"
+        readme.write_text(f"""# Tests for {model.capitalize()}
+
+        This directory contains tests for the {model.capitalize()} model.
+
+        ## Test Structure
+
+        - `test_modeling_{model}.py` - Model architecture tests
+        - `test_tokenization_{model}.py` - Tokenizer tests
+        - `test_configuration_{model}.py` - Configuration tests
+
+        ## Running Tests
+
+        ```bash
+        python -m pytest tests/models/{model}/
+        ````
+
+        ## Notes
+
+        Add specific testing notes for {model.capitalize()} here.
+        """)
+        log.info(f"🧪 Created test folder for: {model}")
+
+def update_main_init():
+    init_path = Path("src/transformers/models/__init__.py")
+    with init_path.open("a", encoding="utf-8") as f:
+        for model in NEW_MODELS:
+            f.write(f"from . import {model}\n")
+            log.info("📥 Updated __init__.py with model imports")
+
+def reorganize_docs_structure():
+    """
+    Deletes onnx.md from docs/source/en/main_classes,
+    moves all content from docs/source/en to docs,
+    and deletes docs/source entirely.
+    """
+    docs_dir = Path("docs")
+    source_en = docs_dir / "source/en"
+    target_dir = docs_dir
+
+    # Remove the specific file
+    onnx_file = source_en / "main_classes/onnx.md"
+    safe_remove_file(onnx_file)
+
+    # Move files and folders from docs/source/en to docs/
+    if source_en.exists():
+        for item in source_en.iterdir():
+            dest = target_dir / item.name
+            if item.is_dir():
+                if dest.exists():
+                    shutil.rmtree(dest)
+                shutil.move(str(item), str(dest))
+                log.info(f"📁 Moved folder: {item} → {dest}")
+            else:
+                shutil.move(str(item), str(dest))
+                log.info(f"📄 Moved file: {item} → {dest}")
+
+    # Delete docs/source folder
+    source_dir = docs_dir / "source"
+    safe_rmtree(source_dir)
+    log.info(f"🧹 Removed docs/source directory")
+
+def replace_auto_files():
+    """
+    Replaces contents of src/transformers/models/auto/ with files from local 'auto' directory.
+    """
+    src_auto_dir = SCRIPT_DIR / "auto"
+    dest_auto_dir = Path("src/transformers/models/auto")
+
+    if not src_auto_dir.exists():
+        log.warning("⚠️  Local 'auto' directory not found.")
+        return
+
+    # Clear destination auto directory
+    for item in dest_auto_dir.glob("*"):
+        if item.is_file():
+            item.unlink()
+        elif item.is_dir():
+            shutil.rmtree(item)
+        log.info(f"🗑️  Removed existing item in auto/: {item.name}")
+
+    # Copy all files from local 'auto' directory to destination
+    for item in src_auto_dir.iterdir():
+        dest = dest_auto_dir / item.name
+        if item.is_file():
+            shutil.copy2(item, dest)
+        elif item.is_dir():
+            shutil.copytree(item, dest)
+        log.info(f"📄 Copied {item.name} → {dest_auto_dir}")
+
+def replace_root_files():
+    """
+    Replaces Makefile, pyproject.toml, and setup.py in the root of the cloned repo
+    with the versions from the local 'py' folder.
+    """
+    py_dir = SCRIPT_DIR / "py"
+    dest_dir = SCRIPT_DIR / TARGET_DIR  # <--- Ensures absolute path
+
+    if not py_dir.exists():
+        log.warning("⚠️  Local 'py' directory not found.")
+        return
+
+    if not dest_dir.exists():
+        log.warning(f"⚠️  Target directory not found: {dest_dir}")
+        return
+
+    root_files = ["Makefile", "pyproject.toml", "setup.py"]
+    for file_name in root_files:
+        src_file = py_dir / file_name
+        dest_file = dest_dir / file_name
+
+        if src_file.exists():
+            shutil.copyfile(src_file, dest_file)
+            log.info(f"📄 Replaced root file: {file_name}")
+        else:
+            log.warning(f"⚠️  Missing file in 'py' folder: {file_name}")
+
+
+
+def main():
+    clone_repo()
+    cleanup_unwanted_models()
+    cleanup_docs()
+    cleanup_test_models()
+    cleanup_auto_models()
+    cleanup_transformers_folders()
+    cleanup_generation_files()
+    cleanup_transformers_files()
+    cleanup_model_docs()
+    cleanup_additional_files()
+    cleanup_examples()
+    add_custom_model_files()
+    add_placeholder_models()
+    create_test_folders()
+    update_main_init()
+    reorganize_docs_structure() 
+    replace_auto_files() 
+    replace_root_files()
+    log.info(f"\n✅ Light Transformers package is ready at: {TARGET_DIR}")
+
+if __name__ == "__main__":
+    main()
