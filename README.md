@@ -10,7 +10,7 @@
 
 - ✅ **Lightweight**: Removes TensorFlow, Flax, ONNX, Sagemaker, and multilingual doc support.
 - ✅ **Focused**: Keeps only your experimental models:  
-  `aformer`, `vformer`, `oformer`, `mformer`, `nformer`, `cformer`, `sformer`
+  `aformer`, `vformer`, `oformer`, `mformer`, `nformer`, `cformer`, `sformer`, `eformer`
 - ✅ **Modular & Clean**: Cleaner structure and smaller size for fast exploration.
 - ✅ **Custom Code Injection**: Injects your own model and tokenizer files automatically.
 - ✅ **Placeholder Docs & Tests**: Basic test folders and markdown docs are generated for each model.
@@ -22,15 +22,15 @@
 Clone this repo and run the builder script:
 
 ```bash
-python light_transformers_builder.py
-```
+python lite_transformers_builder.py
+````
 
 This will:
 
-- Clone the official `transformers` repo
-- Remove all unused backends, examples, tests, and files
-- Retain only the models you define in the script
-- Add placeholder folders and inject your own files for experimentation
+* Clone the official `transformers` repo
+* Remove all unused backends, examples, tests, and files
+* Retain only the models you define in the script
+* Add placeholder folders and inject your own files for experimentation
 
 ---
 
@@ -40,6 +40,7 @@ These models are retained and initialized for experimentation:
 
 ```
 - aformer
+- eformer
 - vformer
 - oformer
 - mformer
@@ -50,9 +51,9 @@ These models are retained and initialized for experimentation:
 
 Each model gets:
 
-- A `src/transformers/models/{model}` folder
-- A test folder in `tests/models/{model}`
-- A documentation stub in `docs/source/en/model_doc/{model}.md`
+* A `src/transformers/models/{model}` folder
+* A test folder in `tests/models/{model}`
+* A documentation stub in `docs/model_doc/{model}.md`
 
 ---
 
@@ -73,11 +74,9 @@ liteformer/
 │       ├── aformer/
 │       ├── ...
 ├── docs/
-│   └── source/
-│       └── en/
-│           └── model_doc/
-│               ├── aformer.md
-│               ├── ...
+│   ├── model_doc/
+│   ├── index.rst
+│   └── ...
 ├── utils/
 ├── docker/
 └── examples/
@@ -90,15 +89,16 @@ liteformer/
 To add a new model (e.g. `xformer`):
 
 1. Create your files:
-   - `__init__.py`
-   - `modular_xformer.py`
-   - `config_xformer.py`
-   - `tokenization_xformer.py`
-   - `tokenization_xformer_fast.py` (optional)
-   - `processing_gemma3n.py` (required if multimodality)
-   - `image_processing_xformer` (required for vision)
-   - `image_processing_xformer_fast` (required for vision, optional)
-   - `feature_extraction_gemma3n` (required for audio)
+
+   * `__init__.py`
+   * `modular_xformer.py`
+   * `config_xformer.py`
+   * `tokenization_xformer.py`
+   * `tokenization_xformer_fast.py` (optional)
+   * `processing_xformer.py` (required if multimodality)
+   * `image_processing_xformer.py` (required for vision)
+   * `image_processing_xformer_fast.py` (optional for vision)
+   * `feature_extraction_xformer.py` (required for audio)
 
 2. Add `"xformer"` to the `NEW_MODELS` list in `light_transformers_builder.py`
 
@@ -112,19 +112,29 @@ python light_transformers_builder.py
 
 ## 🎯 Goals
 
-- Minimize boilerplate and complexity during research
-- Focus on experimental transformer variants
-- Speed up iteration time when prototyping architectures
-- Provide a simple foundation for building new ideas
+* Minimize boilerplate and complexity during research
+* Focus on experimental transformer variants
+* Speed up iteration time when prototyping architectures
+* Provide a simple foundation for building new ideas
 
 ---
 
 ## 🧰 Requirements
 
-- Python 3.8+
-- Git
-- PyTorch
-- (Optional) `pytest` for running tests
+* Python 3.8+
+* Git
+* PyTorch
+* (Optional) `pytest` for running tests
+
+---
+
+## 📋 TODO
+
+* [ ] Make repo compile by removing or fixing invalid imports and paths
+* [ ] Reduce auto classes to only what is minimally necessary
+* [ ] Replace placeholder models with real SOTA architectures (more info coming)
+* [ ] Write clean, user-focused documentation on usage and architecture
+* [ ] Upload as a package to PyPI for easier installation
 
 ---
 
