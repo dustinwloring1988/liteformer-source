@@ -10,7 +10,7 @@ REPO_URL = "https://github.com/huggingface/transformers.git"
 TARGET_DIR = "lite_transformers"
 
 NEW_MODELS = [
-    "aformer", "eformer", "vformer", "oformer",
+    "aformer", "bformer", "eformer", "vformer", "oformer",
     "mformer", "nformer", "cformer", "sformer"
 ]
 
