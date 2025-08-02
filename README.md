@@ -86,21 +86,21 @@ liteformer/
 
 ## 🧪 Adding Your Own Model
 
-To add a new model (e.g. `xformer`):
+To add a new model (e.g. `newformer`):
 
 1. Create your files:
 
    * `__init__.py`
-   * `modular_xformer.py`
-   * `config_xformer.py`
-   * `tokenization_xformer.py`
-   * `tokenization_xformer_fast.py` (optional)
-   * `processing_xformer.py` (required if multimodality)
-   * `image_processing_xformer.py` (required for vision)
-   * `image_processing_xformer_fast.py` (optional for vision)
-   * `feature_extraction_xformer.py` (required for audio)
+   * `modular_newformer.py`
+   * `config_newformer.py`
+   * `tokenization_newformer.py`
+   * `tokenization_newformer_fast.py` (optional)
+   * `processing_newformer.py` (required if multimodality)
+   * `image_processing_newformer.py` (required for vision)
+   * `image_processing_newformer_fast.py` (optional for vision)
+   * `feature_extraction_newformer.py` (required for audio)
 
-2. Add `"xformer"` to the `NEW_MODELS` list in `lite_transformers_builder.py`
+2. Add `"newformer"` to the `NEW_MODELS` list in `lite_transformers_builder.py`
 
 3. Run the script again:
 
@@ -131,6 +131,7 @@ python lite_transformers_builder.py
 ## 📋 TODO
 
 * [ ] Make repo compile by removing or fixing invalid imports and paths
+* [ ] Move replacement files to a subfolder called patches, this can also have subfodlers matching the structure of the transfomers repo
 * [ ] Replace the current __version__ in `src/transformers/__init__.py` with __version__ = "0.1.0"
 * [ ] Reduce auto classes to only what is minimally necessary
 * [ ] Replace placeholder models with real SOTA architectures (more info coming)
