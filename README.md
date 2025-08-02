@@ -131,7 +131,7 @@ python lite_transformers_builder.py
 ## 📋 TODO
 
 * [ ] Make repo compile by removing or fixing invalid imports and paths
-* [ ] Replace the current __version__ in `src/transformers/__init__.py` with __version__ = "0.1.0"
+* [ ] Replace the current __version__ in `src/transformers/__init__.py` with __version__ = "0.1.0-lite"
 * [ ] Reduce auto classes to only what is minimally necessary
 * [ ] Replace placeholder models with real SOTA architectures (more info coming)
 * [ ] Write clean, user-focused documentation on usage and architecture
