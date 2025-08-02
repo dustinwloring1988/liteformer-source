@@ -300,7 +300,42 @@ def replace_root_files():
             log.warning(f"⚠️  Missing file in 'patches': {file_name}")
 
 
-# --- Main ---
+def cleanup_keep_model_files():
+    base_dir = Path("src/transformers/models")
+    # Prefixes for files to remove
+    prefixes_to_remove = ("convert_", "modeling_flax_", "modeling_tf_")
+    # Prefixes to match lines in __init__.py to remove
+    import_line_prefixes = (
+        "from .modeling_flax_",
+        "from .modeling_tf_",
+        "from .convert_"
+    )
+
+    for model in KEEP_MODELS:
+        model_dir = base_dir / model
+        if not model_dir.exists():
+            continue
+
+        # Remove files with specified prefixes
+        for file in model_dir.glob("*.py"):
+            if file.name.startswith(prefixes_to_remove):
+                safe_remove_file(file)
+
+        # Edit __init__.py to remove import lines starting with given prefixes
+        init_file = model_dir / "__init__.py"
+        if init_file.exists():
+            lines = init_file.read_text().splitlines()
+            updated_lines = []
+            for line in lines:
+                if any(line.strip().startswith(prefix) for prefix in import_line_prefixes):
+                    log.info(f"✂️  Removed import line from {model}/__init__.py: {line.strip()}")
+                    continue
+                updated_lines.append(line)
+            init_file.write_text("\n".join(updated_lines) + "\n")
+
+
+
+# Update `main()` to include this function:
 def main():
     clone_repo()
     cleanup_unwanted_models()
@@ -319,10 +354,12 @@ def main():
     reorganize_docs_structure()
     replace_auto_files()
     replace_root_files()
+    cleanup_keep_model_files()  # ← Add this
 
     log.info(f"\n✅ LiteFormer package is ready at: {TARGET_DIR}")
     log.info(f"📦 Models included: {', '.join(sorted(KEEP_MODELS))}")
     log.info("🧪 You can now develop and test your custom transformer architectures!")
+
 
 
 if __name__ == "__main__":
