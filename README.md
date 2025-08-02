@@ -14,7 +14,7 @@
 
 - ✅ **Lightweight**: Removes TensorFlow, Flax, ONNX, Sagemaker, and multilingual doc support.
 - ✅ **Focused**: Keeps only your experimental models:  
-  `aformer`, `vformer`, `oformer`, `mformer`, `nformer`, `cformer`, `sformer`, `eformer`
+  `aformer`, `bformer`, `eformer`, `vformer`, `oformer`, `mformer`, `nformer`, `cformer`, `sformer`, `tformer`
 - ✅ **Modular & Clean**: Cleaner structure and smaller size for fast exploration.
 - ✅ **Custom Code Injection**: Injects your own model and tokenizer files automatically.
 - ✅ **Placeholder Docs & Tests**: Basic test folders and markdown docs are generated for each model.
@@ -43,14 +43,16 @@ This will:
 These models are retained and initialized for experimentation:
 
 ```
-- aformer
-- eformer
-- vformer
-- oformer
-- mformer
-- nformer
-- cformer
-- sformer
+- aformer : Alpha Transformer : Text In Text Out (think nanogpt)
+- bformer : Basic Transformer : Text In Text Out (think gemma2)
+- eformer : MOE Transformer : Any In Text Out (think llama4)
+- vformer : Vision Transformer : Text, Vision In Text Out (think gemma3)
+- oformer : Omni Transformer : Any In Text Out (think)
+- mformer : Mat Transformer : Text In Text Out (think basic version of gemma3n)
+- nformer : OmniMat Transformer : Any In Text Out (think gemma3n)
+- cformer : Clip Transformer : Image In Text Out (think clip)
+- sformer : Speech Transformer : Audio In Text Out (think whisper)
+- tformer : Talking Transformer : Text In Audio Out (think whisper)
 ```
 
 Each model gets:
