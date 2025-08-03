@@ -15,7 +15,7 @@ NEW_MODELS = [
 ]
 
 PRESERVE_MODELS = [
-    "bark", "clip", "clip_text_model", "clip_vision_model", "clipseg", "gemma", "gemma2", "gemma3", 
+    "bark", "chameleon", "clip", "clip_text_model", "clip_vision_model", "clipseg", "gemma", "gemma2", "gemma3", 
     "gemma3_text", "gemma3n", "gemma3n_audio", "gemma3n_text", "gemma3n_vision", "llama", "llama4", 
     "llama4_text", "llava", "llava_next", "llava_next_video", "llava_onevision", "mistral", "mistral3", 
     "mixtral", "mllama", "mobilenet_v1", "mobilenet_v2", "mobilevit", "mobilevitv2", "openai-gpt", 
