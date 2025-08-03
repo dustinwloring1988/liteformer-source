@@ -14,7 +14,7 @@
 
 - ✅ **Lightweight**: Removes TensorFlow, Flax, ONNX, Sagemaker, and multilingual doc support.
 - ✅ **Focused**: Keeps only your experimental models:  
-  `aformer`, `bformer`, `cformer`, `dformer`, `eformer`, `gformer`, `mformer`, `nformer`, `oformer`, `sformer`, `tformer`, `vformer`
+  `aformer`, `bformer`, `cformer`, `dformer`, `eformer`, `fformer`, `mformer`, `nformer`, `oformer`, `sformer`, `tformer`, `vformer`
 - ✅ **Modular & Clean**: Cleaner structure and smaller size for fast exploration.
 - ✅ **Custom Code Injection**: Injects your own model and tokenizer files automatically.
 - ✅ **Placeholder Docs & Tests**: Basic test folders and markdown docs are generated for each model.
