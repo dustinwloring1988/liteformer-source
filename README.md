@@ -14,7 +14,7 @@
 
 - ✅ **Lightweight**: Removes TensorFlow, Flax, ONNX, Sagemaker, and multilingual doc support.
 - ✅ **Focused**: Keeps only your experimental models:  
-  `aformer`, `bformer`, `cformer`, `dformer`, `eformer`, `mformer`, `nformer`, `oformer`, `sformer`, `tformer`, `vformer`
+  `aformer`, `bformer`, `cformer`, `dformer`, `eformer`, `gformer`, `mformer`, `nformer`, `oformer`, `sformer`, `tformer`, `vformer`
 - ✅ **Modular & Clean**: Cleaner structure and smaller size for fast exploration.
 - ✅ **Custom Code Injection**: Injects your own model and tokenizer files automatically.
 - ✅ **Placeholder Docs & Tests**: Basic test folders and markdown docs are generated for each model.
@@ -43,14 +43,15 @@ This will:
 These models are retained and initialized for experimentation:
 
 ```
-- aformer : Alpha Transformer : Text In Text Out (think nanogpt)
+- aformer : Any Transformer : Any In Any Out (think chameleon)
 - bformer : Basic Transformer : Text In Text Out (think gemma2)
 - cformer : Clip Transformer : Image In Text Out (think clip)
 - dformer : Drawing Transformer : Text In Image Out (think aMUSEd)
 - eformer : MOE Transformer : Any In Text Out (think llama4)
+- fformer : First Transformer : Text In Text Out (think gpt2 or nanogpt)
 - mformer : Mat Transformer : Text In Text Out (think basic version of gemma3n)
-- nformer : OmniMat Transformer : Any In Text Out (think gemma3n)
-- oformer : Omni Transformer : Any In Text Out (think)
+- nformer : NewMat Transformer : Any In Text Out (think gemma3n)
+- oformer : Omni Transformer : Any In Text Out (think qwen2_5_omni)
 - sformer : Speech Transformer : Audio In Text Out (think whisper)
 - tformer : Talking Transformer : Text In Audio Out (think whisper)
 - vformer : Vision Transformer : Text, Vision In Text Out (think gemma3)
