@@ -14,17 +14,7 @@ NEW_MODELS = [
 ]
 
 PRESERVE_MODELS = [
-    "bark", "chameleon", "clip", "clip_text_model", "clip_vision_model", "clipseg", "gemma", "gemma2", "gemma3", 
-    "gemma3_text", "gemma3n", "gemma3n_audio", "gemma3n_text", "gemma3n_vision", "llama", "llama4", 
-    "llama4_text", "llava", "llava_next", "llava_next_video", "llava_onevision", "mistral", "mistral3", 
-    "mixtral", "mllama", "mobilenet_v1", "mobilenet_v2", "mobilevit", "mobilevitv2", "openai-gpt", 
-    "paligemma", "phi", "phi3", "phi4_multimodal", "phimoe", "pix2struct", "pixtral", "qwen2", 
-    "qwen2_5_omni", "qwen2_5_vl", "qwen2_5_vl_text", "qwen2_audio", "qwen2_audio_encoder", 
-    "qwen2_moe", "qwen2_vl", "qwen2_vl_text", "qwen3", "qwen3_moe", "sam", "sam_hq", 
-    "sam_hq_vision_model", "sam_vision_model", "shieldgemma2", "siglip", "siglip2", 
-    "siglip_vision_model", "smollm3", "smolvlm", "smolvlm_vision", "timm_backbone", 
-    "timm_wrapper", "video_llava", "vit", "vit_hybrid", "vit_mae", "vit_msn", "vitdet", 
-    "vitmatte", "vitpose", "vitpose_backbone", "vits", "vivit", "whisper", "yolos"
+    "bark", "blip", "blip_2", "chameleon", "clap", "clip", "clipseg", "code_llama", "deepseek_v2", "deepseek_v3", "deepseek_vl", "deepseek_vl_hybrid", "depth_anything", "depth_pro", "detr", "dia", "emu3", "gemma", "gemma2", "gemma3", "gemma3n", "glm", "glm4", "glm4v", "glm4v_moe", "glm4_moe", "gpt2", "gpt_neo", "gpt_neox", "gpt_oss", "idefics", "idefics2", "idefics3", "janus", "kosmos2", "llama", "llama4", "llava", "llava_next", "minimax", "mistral", "mistral3", "mixtral", "mllama", "paligemma", "phi", "phi3", "phi4_multimodal", "qwen2", "qwen2_5_vl", "qwen2_moe", "qwen2_vl", "qwen3", "qwen3_moe", "sam", "sam2", "sam2_video", "sam_hq", "shieldgemma2", "siglip", "siglip2", "smollm3", "smolvlm", "timm_backbone", "timm_wrapper", "whisper", "yolos"
 ]
 
 KEEP_MODELS = set(NEW_MODELS + PRESERVE_MODELS + ["auto"])
